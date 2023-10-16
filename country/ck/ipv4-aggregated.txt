@@ -1,0 +1,6 @@
+# Country: Cook Islands (CK)
+# IP version: IPv4
+# Delegation status: Allocated || Assigned
+# Mode: Aggregated
+#
+202.65.32.0/19

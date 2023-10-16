@@ -1,0 +1,6 @@
+# Country: Turkmenistan (TM)
+# IP version: IPv6
+# Delegation status: Allocated || Assigned
+# Mode: Aggregated
+#
+2a05:2180::/29
