@@ -15,7 +15,7 @@ def filter(message):#jika mengandung ip
     # print(IP(message))
 
 def send_msg_to_server(country_code,ip,service_port):
-    host = '118.136.92.70'  # as both code is running on same pc
+    host = '192.168.1.12'  # as both code is running on same pc
     port = 7777  # socket server port number
     client_socket = socket.socket()  # instantiate
     msg=(country_code,ip,service_port)
