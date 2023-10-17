@@ -1,16 +1,14 @@
-import multiprocessing.pool as mpool
 import multiprocessing
-import sys
 import subprocess
 from multiprocessing import current_process
-from threading import Thread
-from threading import active_count
+from threading import Thread, active_count
 import threading
-from time import sleep
 from IpTools_2 import ip_range_splitter
-from scanner import *
+from send_msg_to_server import send_msg_to_server
 import signal
-import atexit
+from constant import ip_regex
+import re
+
 def clr():
     UP = "\x1B[3A"
     CLR = "\x1B[0K"
@@ -18,8 +16,9 @@ def clr():
 
 def printU(msg):#updating message in one line
     print(f"\r{msg}",end='',flush=True)
+
 def extract_ip_port(msg):
-    ip= re.search(constant.ip_regex, msg).group()
+    ip= re.search(ip_regex, msg).group()
     port=re.search("\d+",msg).group()
     return ip,port
 
@@ -36,7 +35,9 @@ def masscan_ips(country_code,target_port,ip_range):
             print(f"current process = {active_count()}")
 
             #Discovered open port 22/tcp on 1.53.252.124
+            # print("check--------------------")
             ip,port=extract_ip_port(line)
+            # print(ip,port,"why not executed---------------")
             # print("ip danport = ",ip,port)
             send_msg_to_server(country_code,ip,port)
     # p.wait()
@@ -71,33 +72,12 @@ def initializer():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     # signal.signal(signal.SIGCLD, signal.SIG_IGN)
 
-def cleanup():
-    timeout_sec = 5
 
-    all_process = psutil.Popen.children()
-        # psutil.Process())
-    children = all_process.children(recursive=True)
-    for child in children:
-        print('Child pid is {}'.format(child.pid))
-    print("checkpoint",all_process)
-    # input("enter again to kill process")
-    # for p in all_process:  # list of your processes
-    #     p_sec=0
-    #     for second in range(timeout_sec):
-    #         if p.poll() == None:
-    #             time.sleep(1)
-    #             p_sec += 1
-    #     if p_sec >= timeout_sec:
-    #         p.kill()  # supported from python 2.6
-    # print("cleaned up!")
-def kill_all_process():
-    atexit.register(cleanup)
-    sys.exit()
 
 
 def multi_process(country_code,ip_ranges,port):
     #user variable----------------------------------------------------------------------------------------------
-    max_concurrent_thread = 10
+    max_concurrent_thread = 5
 
     # parmap.map(range_scanner,pm_processes=4)
     try:                      #.get_context('spawn')

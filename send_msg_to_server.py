@@ -4,6 +4,7 @@ def send_msg_to_server(country_code,ip,service_port):
     server_port = 7777  # socket server port number
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # instantiate
     msg=(f"{country_code};{ip};{service_port}")
+    print(msg)
     # try:
     client_socket.connect((server_ip,server_port))
     client_socket.send(msg.encode())
