@@ -10,7 +10,6 @@ from time import sleep
 from IpTools_2 import ip_range_splitter
 from scanner import *
 import signal
-import psutil
 import atexit
 def clr():
     UP = "\x1B[3A"
@@ -25,7 +24,7 @@ def extract_ip_port(msg):
     return ip,port
 
 def masscan_ips(country_code,target_port,ip_range):
-    cmd = ["masscan-snap","-p"+f"{target_port}", "--range", f"{ip_range}"]
+    cmd = ["masscan","-p"+f"{target_port}", "--range", f"{ip_range}"]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)#,stderr=subprocess.DEVNULL)
 
     while p.poll() is None:
@@ -96,12 +95,13 @@ def kill_all_process():
     sys.exit()
 
 
-def main(country_code,ip_ranges,port):
-    max_concurrent_thread = 3
+def multi_process(country_code,ip_ranges,port):
+    #user variable----------------------------------------------------------------------------------------------
+    max_concurrent_thread = 10
 
     # parmap.map(range_scanner,pm_processes=4)
-    try:
-        pool = multiprocessing.get_context('spawn').Pool(max_concurrent_thread,maxtasksperchild=max_concurrent_thread)#initializer)
+    try:                      #.get_context('spawn')
+        pool = multiprocessing.Pool(max_concurrent_thread,initializer=initializer)#,maxtasksperchild=max_concurrent_thread)
         for ip_range in ip_ranges:
             pool.apply_async(range_scanner, args=(country_code,port, ip_range))
         print("active child = 1", multiprocessing.active_children())
@@ -117,28 +117,34 @@ def main(country_code,ip_ranges,port):
     finally:
         pool.terminate()
         pool.join()
-        print("Bye have a g"
-              "reat time!")
+        print("Bye have a g""reat time!")
         print("active child = 3", multiprocessing.active_children())
 
 def multi_thread(country_code,ip_ranges,port):
     for ip_range in ip_ranges:
         t=Thread(target=range_scanner,args=(country_code,port,ip_range))
         t.start()
-# def country_scanner(country_code,port,hosts_per_thread):
 
 
 if __name__=="__main__":
+    #---------------------------------
+    #Dependencies
+    #User input----------------------------------------------------------------
+    mode="real"
     country_code="vn"
     port=22
-    hosts_per_thread=500000
+    hosts_per_thread=200000
+    #max_concurrent_threads di main()
+    #----------------------------------------------
+
     # country_scanner(country_code,22,200000)
     ip_ranges = ip_range_splitter(country_code, hosts_per_thread)
-
+    if mode=="tes":
     #single masscan--------------
-    # ip_range=ip_ranges[0]
-    # range=ip_range[0]
-    # masscan_ips(country_code,port,range)
-
-    #running multiple masscan
-    multi_thread(country_code,ip_ranges, port)
+        ip_range=ip_ranges[0]
+        range=ip_range[0]
+        masscan_ips(country_code,port,range)
+    elif mode=="real":
+    #   running multiple masscan
+        # multi_thread(country_code,ip_ranges, port)
+        multi_process(country_code,ip_ranges,port)

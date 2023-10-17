@@ -1,6 +1,7 @@
 import subprocess
 import socket
 import constant
+from send_msg_to_server import send_msg_to_server
 # from IPy import IP
 import re
 from IpTools_2 import ip_range_splitter
@@ -13,20 +14,6 @@ def filter(message):#jika mengandung ip
         if b:
             return(message)
     # print(IP(message))
-
-def send_msg_to_server(country_code,ip,service_port):
-    host = '192.168.1.12'  # as both code is running on same pc
-    port = 7777  # socket server port number
-    client_socket = socket.socket()  # instantiate
-    msg=(country_code,ip,service_port)
-    try:
-        client_socket.connect((host, port))
-        return 0
-    except:
-        print("not connected")
-        return 1
-    client_socket.send(msg.encode())
-
 
 # target_port=22
 # ip_range="101.204.0.0-101.207.255.255"
@@ -49,8 +36,3 @@ def masscan_ips(target_port,ip_range):
 #         print("success establishing")
 #     wait for server respond
 #         if server said okay then process
-
-
-
-
-
