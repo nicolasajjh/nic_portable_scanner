@@ -25,7 +25,7 @@ def extract_ip_port(msg):
     return ip,port
 
 def masscan_ips(country_code,target_port,ip_range):
-    cmd = ["masscan","-p"+f"{target_port}", "--range", f"{ip_range}"]
+    cmd = ["masscan-snap","-p"+f"{target_port}", "--range", f"{ip_range}"]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)#,stderr=subprocess.DEVNULL)
 
     while p.poll() is None:
